@@ -5,7 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class 2FA
+// Google2FAMiddleware
+class FA
 {
     /**
      * Handle an incoming request.
@@ -16,6 +17,14 @@ class 2FA
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+        
+        $authentication = app(Google2FAAuthentication::class)->boot($request);
+
+        
+        if ($authentication->isAuthenticated()) {
+            return $next($request);
+        }
+
+        return $authentication->makeRequestOneTimePasswordResponse();
     }
 }
